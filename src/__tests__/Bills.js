@@ -26,9 +26,9 @@ describe("Given I am connected as an employee", () => {
       root.setAttribute("id", "root")
       document.body.append(root)
       router()
-      window.onNavigate(ROUTES_PATH.Bills)
-      await waitFor(() => screen.getByTestId('icon-window'))
-      const windowIcon = screen.getByTestId('icon-window')
+      window.onNavigate(ROUTES_PATH.Bills) // on navigate sur la page bills
+      await waitFor(() => screen.getByTestId('icon-window')) //on attends le container d'icône
+      const windowIcon = screen.getByTestId('icon-window') //on vient séléctionner l'icône d'oeil
       expect(windowIcon).toHaveClass('active-icon') //check si l'icône est en surbrillance - on vérifie si l'élément a la classe correspondante
     })
     test("Then bills should be ordered from earliest to latest", async () => {
