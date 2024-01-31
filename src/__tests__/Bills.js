@@ -10,7 +10,6 @@ import { ROUTES, ROUTES_PATH} from "../constants/routes.js";
 import {localStorageMock} from "../__mocks__/localStorage.js";
 import Bills from '../containers/Bills.js'
 import mockStore from "../__mocks__/store"
-
 import router from "../app/Router.js";
 
 jest.mock("../app/store", () => mockStore)
@@ -30,8 +29,7 @@ describe("Given I am connected as an employee", () => {
       window.onNavigate(ROUTES_PATH.Bills)
       await waitFor(() => screen.getByTestId('icon-window'))
       const windowIcon = screen.getByTestId('icon-window')
-      expect(windowIcon).toHaveClass('active-icon')
-
+      expect(windowIcon).toHaveClass('active-icon') //check si l'icône est en surbrillance - on vérifie si l'élément a la classe correspondante
     })
     test("Then bills should be ordered from earliest to latest", async () => {
       const onNavigate = (pathname) => {
@@ -41,15 +39,17 @@ describe("Given I am connected as an employee", () => {
       const billsContainer = new Bills({
         document, onNavigate, store: mockStore, localStorage: null
       })
+      //on vient chercher les bills du mockstore et leurs dates
       const result = await billsContainer.getBills()
       const dates = result.map(bill => bill.date)
 
-      const antiChrono = (a, b) => ((a < b) ? 1 : -1)
-      const datesSorted = [...dates].sort(antiChrono)
-      expect(dates).toEqual(datesSorted)
+      const antiChrono = (a, b) => ((a < b) ? 1 : -1) //établi les règles de tri
+      const datesSorted = [...dates].sort(antiChrono) // trie les dates 
+      expect(dates).toEqual(datesSorted) // s'attends à ce que les dates soit égales au dates triées
     })
 
     test("Then it should fetch bills from mock API GET", async () => {
+      // on vient importer notre mock local storage d'employé
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
       window.localStorage.setItem('user', JSON.stringify({
         type: 'Employee'
@@ -59,11 +59,12 @@ describe("Given I am connected as an employee", () => {
       document.body.append(root)
       router()
       window.onNavigate(ROUTES_PATH.Bills)
-      await waitFor(() => screen.getByText("Mes notes de frais"))
+      // on fait naviguer sur la page des factures 
+      await waitFor(() => screen.getByText("Mes notes de frais"))// cherche pour le text "Mes notes de frais" à l'écran
       const mockedBill1Nom  = await screen.getByText("encore")
-      expect(mockedBill1Nom).toBeTruthy()
-      const mockedBill1Date  = await screen.getByText("4 Avr. 04")
-      expect(mockedBill1Date).toBeTruthy()
+      expect(mockedBill1Nom).toBeTruthy() // s'attends à une valeur "vraie"
+      const mockedBill1Date  = await screen.getByText("4 Avr. 04") // cherche pour le text "4 Avr. 04" à l'écran
+      expect(mockedBill1Date).toBeTruthy() // s'attends à une valeur "vraie"
     })
   })
 
@@ -72,22 +73,23 @@ describe("Given I am connected as an employee", () => {
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname })
       }
-
+      // on vient importer notre mock local storage d'employé
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
       window.localStorage.setItem('user', JSON.stringify({
         type: 'Employee'
       }))
-
+      //  on crée un nouveau container pour les factures
       const billsContainer = new Bills({
         document, onNavigate, store: mockStore, localStorage: null
       })
-      document.body.innerHTML = BillsUI({ data: bills })
-      const handleClickButton = jest.fn((e) => billsContainer.handleClickNewBill())
+
+      document.body.innerHTML = BillsUI({ data: bills }) // on rempli le form avec des données mock
+      const handleClickButton = jest.fn((e) => billsContainer.handleClickNewBill()) // on click sur le bouton
       const newBillButton = screen.getByTestId('btn-new-bill')
-      newBillButton.addEventListener('click', handleClickButton)
-      userEvent.click(newBillButton)
-      expect(handleClickButton).toHaveBeenCalled()
-      expect(screen.getByTestId('form-new-bill')).toBeTruthy()
+      newBillButton.addEventListener('click', handleClickButton) // on écoute le click du bouton pour créer une facture
+      userEvent.click(newBillButton) 
+      expect(handleClickButton).toHaveBeenCalled() // on s'attends à ce que le boutton soit appelé 
+      expect(screen.getByTestId('form-new-bill')).toBeTruthy() // on s''attends à une valeur "vraie" quand l'id "form-new-bill" est affiché
     })
   })
 
@@ -107,12 +109,12 @@ describe("Given I am connected as an employee", () => {
       })
       document.body.innerHTML = BillsUI({ data: bills })
       
-      const eyeButtons = screen.getAllByTestId("icon-eye")
+      const eyeButtons = screen.getAllByTestId("icon-eye") // on selectionne l'icone d'oeil
       const handleClickButton = jest.fn(() => billsContainer.handleClickIconEye(eyeButtons[1]))
-      eyeButtons[1].addEventListener('click', handleClickButton)
+      eyeButtons[1].addEventListener('click', handleClickButton) // on écoute les intéraction avec le bouton de l'icone d'oeil
       userEvent.click(eyeButtons[1])
-      expect(handleClickButton).toHaveBeenCalled()
-      expect(screen.getByTestId('modaleFile').getAttribute('class')).toContain('show')
+      expect(handleClickButton).toHaveBeenCalled() // on s'attends à ce que le bouton soit appelé
+      expect(screen.getByTestId('modaleFile').getAttribute('class')).toContain('show') // on s'attends à ce que la modal soit affiché, avec tout le bon id, classe et qu'elle ait l'attribu "show"
     })
   })
 
@@ -134,21 +136,21 @@ describe("Given I am connected as an employee", () => {
       router()
     })
     test("then it should fetch bills from an API and fails with 404 message error", async () => {
-
+      // on prépare une erreur à envoyer
       mockStore.bills.mockImplementationOnce(() => {
         return {
           list : () =>  {
             return Promise.reject(new Error("Erreur 404"))
           }
         }})
-      window.onNavigate(ROUTES_PATH.Bills)
+      window.onNavigate(ROUTES_PATH.Bills) // lorsque l'on navige sur la page bills, on envoie la "promise" préparée
       await new Promise(process.nextTick);
-      const message = await screen.getByText(/Erreur 404/)
-      expect(message).toBeTruthy()
+      const message = await screen.getByText(/Erreur 404/) // le message qui est sensé s'affiché est "error 404"
+      expect(message).toBeTruthy() // on s'attends à ce qu'il y ait un message d'affiché
     })
 
     test("Then it should fetch messages from an API and fails with 500 message error", async () => {
-
+// on prépare une erreur à envoyer
       mockStore.bills.mockImplementationOnce(() => {
         return {
           list : () =>  {
@@ -156,10 +158,10 @@ describe("Given I am connected as an employee", () => {
           }
         }})
 
-      window.onNavigate(ROUTES_PATH.Bills)
+      window.onNavigate(ROUTES_PATH.Bills)// lorsque l'on navige sur la page bills, on envoie la "promise" préparée
       await new Promise(process.nextTick);
-      const message = await screen.getByText(/Erreur 500/)
-      expect(message).toBeTruthy()
+      const message = await screen.getByText(/Erreur 500/)// le message qui est sensé s'affiché est "error 500"
+      expect(message).toBeTruthy()// on s'attends à ce qu'il y ait un message d'affiché
     })
   })
 })
