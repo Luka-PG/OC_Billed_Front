@@ -16,8 +16,9 @@ jest.mock("../app/store", () => mockStore)
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
+    // l'icône facture doit être en surbrilliance
     test("Then bill icon in vertical layout should be highlighted", async () => {
-
+      // affiche les données de la page employé
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
       window.localStorage.setItem('user', JSON.stringify({
         type: 'Employee'
