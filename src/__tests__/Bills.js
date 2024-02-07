@@ -164,7 +164,7 @@ describe("Given I am connected as an employee", () => {
       }));
       onNavigate(ROUTES_PATH.Bills);
       const message = await screen.findByText(/Erreur 500/);
-      expect(message).toBeInTheDocument();
+      expect(message).toBeInTheDocument();  // on s'attends à une erreur
     })
   })
 })

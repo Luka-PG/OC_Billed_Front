@@ -98,7 +98,7 @@ describe('Given I am connected as an employee', () => {
       // on ne peut pas upload un fichier qui n'est pas une image
       test("Then, I can't select a non-image file, and the page displays an alert", () => {
         document.body.innerHTML = NewBillUI();
-
+        //mock nill
         const newbill = new NewBill({
           document,
           onNavigate,
@@ -107,7 +107,7 @@ describe('Given I am connected as an employee', () => {
         });
 
         const handleChangeFile = jest.spyOn(newbill, "handleChangeFile");
-
+        // on écoute le mock de changement de fichier
         const fileInput = screen.getByTestId("file");
         const file = new File(["file"], "example.jpg", {
           type: "image/jpg",
@@ -115,7 +115,7 @@ describe('Given I am connected as an employee', () => {
 
         fileInput.addEventListener("change", handleChangeFile);
         userEvent.upload(fileInput, file);
-
+        // test bon si un appel est fait
         expect(handleChangeFile).toHaveBeenCalled();
         expect(fileInput.files[0]).toStrictEqual(file);
       })
@@ -128,29 +128,29 @@ describe('Given I am a user connected as Employee', () => {
   describe('When I submit a completed form', () => {
     test('Then a new bill should be created', async () => {
       document.body.innerHTML = NewBillUI();
-
+      //on mock une facture
       const newbill = new NewBill({
         document,
         onNavigate,
         store: mockStore,
         localStorage: window.localStorage,
       });
-
+      // on simule le submit et le update des bills
       const handleSubmit = jest.spyOn(newbill, "handleSubmit");
       const updateBill = jest.spyOn(newbill, "updateBill");
 
       const getMockedList = await mockStore.bills().list();
       const MockedList = getMockedList[0];
 
-      newbill.updateBill(MockedList); //we simulate the new bill in the updateBill methode
+      newbill.updateBill(MockedList); // on simule la nouvelle facture dans le "updateBill" 
 
       const submitButton = screen.getByTestId("form-new-bill");
       submitButton.addEventListener("click", handleSubmit);
       userEvent.click(submitButton);
 
-      expect(handleSubmit).toHaveBeenCalled(); //submit called
+      expect(handleSubmit).toHaveBeenCalled(); // on s'attends à ce que la fonction envoi soit appelé
       expect(updateBill).toHaveBeenCalledWith(
-        expect.objectContaining(MockedList) //we call updateBill with the new bill data
+        expect.objectContaining(MockedList) //on apelle la fonction update avec les nouvelles infos
       )
     })
   })
