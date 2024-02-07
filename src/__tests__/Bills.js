@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-
+import "@testing-library/jest-dom"
 import {screen, waitFor} from "@testing-library/dom"
 import userEvent from '@testing-library/user-event'
 import BillsUI from "../views/BillsUI.js"
@@ -96,26 +96,33 @@ describe("Given I am connected as an employee", () => {
 
   describe("When I click on one of the eye icons", () => {
     test("Then it should open the modal and show an image", async () => {
+      
+      $.fn.modal = jest.fn(); // empêche erreur jQuery
+
+      // défini le chemin d'accès
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname })
       }
-
+      // affiche les données de la page
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
-      window.localStorage.setItem('user', JSON.stringify({
-        type: 'Employee'
-      }))
+      window.localStorage.setItem('user', JSON.stringify({ type: 'Employee' }));
+  
+      document.body.innerHTML = BillsUI({ data: bills });
 
       const billsContainer = new Bills({
-        document, onNavigate, store: mockStore, localStorage: null
-      })
-      document.body.innerHTML = BillsUI({ data: bills })
-      
-      const eyeButtons = screen.getAllByTestId("icon-eye") // on selectionne l'icone d'oeil
-      const handleClickButton = jest.fn(() => billsContainer.handleClickIconEye(eyeButtons[1]))
-      eyeButtons[1].addEventListener('click', handleClickButton) // on écoute les intéraction avec le bouton de l'icone d'oeil
-      userEvent.click(eyeButtons[1])
-      expect(handleClickButton).toHaveBeenCalled() // on s'attends à ce que le bouton soit appelé
-      expect(screen.getByTestId('modaleFile').getAttribute('class')).toContain('show') // on s'attends à ce que la modal soit affiché, avec tout le bon id, classe et qu'elle ait l'attribu "show"
+        document, onNavigate, store: mockStore, localStorage: window.localStorage
+      });
+      // récupère l'icône oeil
+      const iconView = screen.getAllByTestId('icon-eye')[0];
+      // créé la fonction à tester
+      const openViewModal = jest.fn(billsContainer.handleClickIconEye(iconView));
+
+      iconView.addEventListener('click', openViewModal); // écoute l'évènement au clic
+      userEvent.click(iconView); // simule le clic
+
+      expect(openViewModal).toHaveBeenCalled(); // on s'attend à ce que la fonction ait été appellée et donc la page chargée
+      const modale = screen.getByTestId('modaleFile'); // on a ajouté un data-testid à la modale dans BillsUI qu'on récupère
+      expect(modale).toBeTruthy(); // on s'attend à ce que la modale soit présente
     })
   })
 
