@@ -12,7 +12,7 @@ import Bills from '../containers/Bills.js'
 import mockStore from "../__mocks__/store"
 import router from "../app/Router.js";
 
-jest.mock("../app/store", () => mockStore)
+jest.mock("../app/Store", () => mockStore)
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
@@ -163,7 +163,7 @@ describe("Given I am connected as an employee", () => {
         list: () => Promise.reject(new Error("Erreur 500")),
       }));
       onNavigate(ROUTES_PATH.Bills);
-      const message = await screen.findByText(/Erreur 500/);
+      const message = await screen.findByText(/Erreur 500/); // on cherche le message d'erreur à l'écran
       expect(message).toBeInTheDocument();  // on s'attends à une erreur
     })
   })

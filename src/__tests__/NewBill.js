@@ -12,7 +12,7 @@ import mockStore from '../__mocks__/store.js'
 import router from '../app/Router.js'
 
 // mock le store qu'on va utiliser
-jest.mock('../app/store', () => mockStore)
+jest.mock('../app/Store', () => mockStore)
 
 describe('Given I am connected as an employee', () => {
   beforeEach(() => {
