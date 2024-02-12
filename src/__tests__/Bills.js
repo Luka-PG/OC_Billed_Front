@@ -159,9 +159,12 @@ describe("Given I am connected as an employee", () => {
 
     test("Then it should fetch messages from an API and fails with 500 message error", async () => {
     // on prépare une erreur à envoyer
-      mockStore.bills.mockImplementationOnce(() => ({
-        list: () => Promise.reject(new Error("Erreur 500")),
-      }));
+      mockStore.bills.mockImplementationOnce(() => {
+        return {
+          list : () =>  {
+            return Promise.reject(new Error("Erreur 500"))
+          }
+        }})
       onNavigate(ROUTES_PATH.Bills);
       const message = await screen.findByText(/Erreur 500/); // on cherche le message d'erreur à l'écran
       expect(message).toBeInTheDocument();  // on s'attends à une erreur

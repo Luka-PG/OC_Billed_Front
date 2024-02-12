@@ -153,5 +153,21 @@ describe('Given I am a user connected as Employee', () => {
         expect.objectContaining(MockedList) //on apelle la fonction update avec les nouvelles infos
       )
     })
+    describe("When I complete the required fields and submit the form", () => {
+      beforeEach(() => {
+        jest.spyOn(mockStore, "bills");
+      });
+      test("then it should send bills from mock API POST", async () => {
+        //create method
+        const CreateBill = await mockStore.bills().create();
+        expect(CreateBill.key).toBe("1234");
+        console.log(CreateBill);
+  
+        //update method
+        const UpdateBill = await mockStore.bills().update();
+        expect(UpdateBill.id).toBe("47qAXb6fIm2zOKkLzMro");
+        console.log(UpdateBill);
+      });
+    });
   })
 })
