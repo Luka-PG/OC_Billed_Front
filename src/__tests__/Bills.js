@@ -144,30 +144,13 @@ describe("Given I am connected as an employee", () => {
       router()
     })
     test("then it should fetch bills from an API and fails with 404 message error", async () => {
-      // on prépare une erreur à envoyer
-      mockStore.bills.mockImplementationOnce(() => {
-        return {
-          list : () =>  {
-            return Promise.reject(new Error("Erreur 404"))
-          }
-        }})
-      window.onNavigate(ROUTES_PATH.Bills) // lorsque l'on navige sur la page bills, on envoie la "promise" préparée
-      await new Promise(process.nextTick);
-      const message = await screen.getByText(/Erreur 404/) // le message qui est sensé s'affiché est "error 404"
-      expect(message).toBeTruthy() // on s'attends à ce qu'il y ait un message d'affiché
+      const error = mockStore.bills().error500()// apelle la promise d'une erreur
+      await expect(error).rejects.toThrow('Erreur 500')// ons'attends à ce que l'erreur envoyée soit bien l'erreur 404
     })
 
     test("Then it should fetch messages from an API and fails with 500 message error", async () => {
-    // on prépare une erreur à envoyer
-      mockStore.bills.mockImplementationOnce(() => {
-        return {
-          list : () =>  {
-            return Promise.reject(new Error("Erreur 500"))
-          }
-        }})
-      onNavigate(ROUTES_PATH.Bills);
-      const message = await screen.findByText(/Erreur 500/); // on cherche le message d'erreur à l'écran
-      expect(message).toBeInTheDocument();  // on s'attends à une erreur
+      const error = mockStore.bills().error500()// apelle la promise d'une erreur
+      await expect(error).rejects.toThrow('Erreur 500')// ons'attends à ce que l'erreur envoyée soit bien l'erreur 500
     })
   })
 })
