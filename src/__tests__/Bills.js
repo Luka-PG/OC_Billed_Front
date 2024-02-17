@@ -144,8 +144,8 @@ describe("Given I am connected as an employee", () => {
       router()
     })
     test("then it should fetch bills from an API and fails with 404 message error", async () => {
-      const error = mockStore.bills().error500()// apelle la promise d'une erreur
-      await expect(error).rejects.toThrow('Erreur 500')// ons'attends à ce que l'erreur envoyée soit bien l'erreur 404
+      const error = mockStore.bills().error404()// apelle la promise d'une erreur
+      await expect(error).rejects.toThrow('Erreur 404')// ons'attends à ce que l'erreur envoyée soit bien l'erreur 404
     })
 
     test("Then it should fetch messages from an API and fails with 500 message error", async () => {
